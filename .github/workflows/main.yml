@@ -5,13 +5,17 @@ on:
     branches: [ main ]
   schedule:
     - cron: "0 8 * * *"  # chaque jour à 8h UTC (9h France)
+  workflow_dispatch:  # ✅ te permet de le lancer manuellement aussi
 
 jobs:
   pipeline:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write   # ✅ donne au bot le droit de push
+
     steps:
-      - name: 🧩 Cloner le dépôt
+      - name: ✅ Cloner le dépôt
         uses: actions/checkout@v3
 
       - name: 🐍 Installer Python
@@ -21,13 +25,13 @@ jobs:
 
       - name: 📦 Installer les dépendances
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🚀 Exécuter le pipeline
+      - name: 🚀 Lancer le pipeline
         run: python run_pipeline.py
 
-      - name: 💾 Commit et push du CSV nettoyé
+      - name: 🔁 Commit & Push du CSV
         run: |
           git config user.name "hadil123-web"
           git config user.email "67033085+hadil123-web@users.noreply.github.com"
