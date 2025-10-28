@@ -1,0 +1,36 @@
+name: 🎬 Pipeline Automatisé - Scraping & Nettoyage
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: "0 8 * * *"  # chaque jour à 8h UTC (9h France)
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Cloner le dépôt
+        uses: actions/checkout@v3
+
+      - name: 🐍 Installer Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: 📦 Installer les dépendances
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🚀 Exécuter le pipeline
+        run: python run_pipeline.py
+
+      - name: 💾 Commit et push du CSV nettoyé
+        run: |
+          git config user.name "hadil123-web"
+          git config user.email "67033085+hadil123-web@users.noreply.github.com"
+          git add scripts/data/films_clean.csv || echo "Aucun changement"
+          git commit -m "🔁 Mise à jour automatique du CSV via pipeline" || echo "Aucun commit"
+          git push
